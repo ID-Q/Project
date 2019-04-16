@@ -56,7 +56,7 @@ void popen_script(int type) {
                         memset(test, 0, sizeof(test));
                         sprintf(test, "%d %s", 100 + type, buff);
                         DBG("\033[32m发送警告信息: %s\033[0m\n", test);
-                        if (send_warning_udp(conf.Warn_Port, conf.Master_Ip, test) < 0) {
+                        if (socket_connect_udp(conf.Warn_Port, conf.Master_Ip, test) < 0) {
                             DBG("\033[31m发送警告信息失败: %s\033[0m\n", strerror(errno));
                             write_log(conf.Sys_Log, "popen_script->\033[31m发送警告信息失败: %s\033[0m", strerror(errno));
                         }

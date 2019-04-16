@@ -1,8 +1,8 @@
 /*************************************************************************
 	> File Name: common.h
 	> Author: zhengdongqi
-	> Mail: 
-	> Created Time: 六  2/23 11:12:28 2019
+	> Mail: 1821260963@qq.com
+	> Created Time: 二  4/ 2 15:57:11 2019
  ************************************************************************/
 
 #ifndef _COMMON_H
@@ -43,10 +43,11 @@
 #define DBG(fmt, args...)
 #endif
 
+#define config "../Client/config/client.conf"
 #define MAX_SIZE 1024
 #define SIZE 128
 #define N 6
-#define config "../Client/config/client.conf"
+
 
 struct Client_Conf{
     char *Master_Ip;//Master_Ip地址
@@ -93,35 +94,36 @@ int socket_create_udp(int port);
 int socket_connect_tcp(int port, char *host, int sec, double usec);
 
 /*客户使用 UDP 链接*/
-int send_warning_udp(int port, char *host, char *buff);
+int socket_connect_udp(int port, char *host, char *buff);
 
-//获取配置文件数据：参数存储
+/*获取配置文件数据：参数存储*/
 int get_conf_argv(char *pathname, char* key_name, char *value);
 
-//获取配置文件数据：指针
+/*获取配置文件数据：指针*/
 char *get_conf_value(const char *pathname, const char *key_name);
 
-//写入日志数据
+/*写入日志数据*/
 int write_log(char *pathname, const char *format, ...);
 
-//发送文件
+/*发送文件*/
 int send_file(int fd, char *filename);
 
-//实现ntoa功能
+/*实现ntoa功能*/
 char *my_inet_ntoa(struct in_addr in);
 
-//心跳检测
+/*心跳检测*/
 bool heart_test(int port, char *host);
 
-//文件压缩函数
+/*文件压缩函数*/
 int backup(char *filenames, char *backfilenames);
 
-//获取文件大小
+/*获取文件大小*/
 int file_size(char *filename);
 
-//文件解压函数
+/*文件解压函数*/
 int unback(char *backfilenames, char *filenames);
 
-//字符判断函数
+/*字符判断函数*/
 int strtok_func(char *buff, char *option, char *flag);
+
 #endif
