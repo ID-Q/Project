@@ -76,7 +76,6 @@ int check_ip(LinkedList head, struct sockaddr_in addr) {
     LinkedList p = head;
     while (p->next != NULL) {
         if (p->next->addr.sin_addr.s_addr == addr.sin_addr.s_addr) {
-            fflush(stdout);
             return 1;
         }
         p = p->next;
