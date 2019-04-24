@@ -10,3 +10,7 @@
 
   > 使用方法 make -f m_server
 
+- client.conf 客户端配置文件
+- server.conf 服务器端配置文件
+- node.c 使用链表存放用户信息
+- log 存放聊天记录
