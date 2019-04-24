@@ -5,5 +5,7 @@
 - ChatRoom_Q2 双端口的聊天室（带有私聊功能）
 - ChatRoom_lock 使用互斥锁的聊天室 （带有私密聊天功能）
 - ChatRoom_rwlock 使用读写锁的聊天室 （带有私密聊天功能）
--  Test 简易测试框架
+- Sock_Pro 健康监测群控系统
+- Test 简易测试框架
+- echo 非亲缘共享内存
 - common 公共文件 （包含相应的头文件）
