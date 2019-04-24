@@ -5,7 +5,7 @@ OBJS = main.o test.o testfunc1.o testfunc2.o testfunc3.o
 .PHONY: clean
 
 a.out : $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS) -o test
     
 main.o : main.c
 	$(CC) -c $(CFLAGS) main.c
@@ -23,4 +23,4 @@ testfunc3.o : testfunc3.c testfunc3.h
 	$(CC) -c $(CFLAGS) testfunc3.c
 
 clean:
-	rm -rf *.o a.out
+	rm -rf *.o test
