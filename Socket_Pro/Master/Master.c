@@ -53,6 +53,7 @@ void *login_pthread(void *argv) {
     do_epoll(linkedlist, login_listen);
     return NULL;
 }
+/*心跳检测*/
 void *heart_pthread(void *argv) {
     LinkedList head = (LinkedList)argv;
     LinkedList p, q;
@@ -299,8 +300,8 @@ int main() {
         DBG("创建登陆套接字失败：%s\n", strerror(errno));
     }
     /*线程池初始化*/
-    threadpool_init(&pool, 2, 100);
-    /*添加队列*/
+    threadpool_init(&pool, 2, 10);
+    /*定时队列*/
     timers_init(1);
     while(1);
     //摧毁线程池
