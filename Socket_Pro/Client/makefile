@@ -5,7 +5,7 @@ OBJS = Client.o common.o
 .PHONY: clean
 
 ./a.out : $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) 
+	$(CC) $(CFLAGS) $(OBJS) -lpthread -lz 
 
 Client.o : Client.c
 	$(CC) -c $(CFLAGS) Client.c
