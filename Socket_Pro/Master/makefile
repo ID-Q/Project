@@ -5,7 +5,7 @@ OBJS = Master.o node.o epoll.o common.o condition.o threadpool.o
 .PHONY: clean
 
 ./a.out : $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) -lpthread 
+	$(CC) $(CFLAGS) $(OBJS) -lpthread -o pihealth.master 
 
 Master.o : Master.c
 	$(CC) -c $(CFLAGS) Master.c
@@ -26,5 +26,5 @@ threadpool.o : ./threadpool/threadpool.c ./threadpool/threadpool.h
 	$(CC) -c $(CFLAGS) ./threadpool/threadpool.c
 
 clean:
-	rm -rf *.o ./a.out
+	rm -rf *.o pihealth.master
 
