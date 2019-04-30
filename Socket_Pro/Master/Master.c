@@ -20,7 +20,6 @@ LinkedList linkedlist = NULL;
 
 struct timers print_timer; //输出间隔时间
 struct timers heart_timer; //心跳间隔时间
-struct timers login_timer; //登陆间隔时间
 struct timers ctrldata_timer; //数据传输间隔时间
 
 int login_listen;
@@ -67,7 +66,7 @@ void *heart_pthread(void *argv) {
     int maxfd = 0;
     p = head;
     while (p != NULL && p->next != NULL) {
-        int heart_fd;
+        int heart_fd = 0;
         struct sockaddr_in heart_addr;
         //创建套接字
         if ((heart_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
@@ -198,27 +197,55 @@ void *ctrl_data_pthread(void *argv) {
     close(ctrl_fd);
     return NULL;
 }
+/*警告信息*/
+/*void *warn_pthread(void *argv) {
+    int warn_fd;
+    if ((warn_fd = socket_create_udp(conf.Warn_Port)) < 0) {
+        DBG("Error in socket_create_udp: %s\n", strerror(errno));
+        write_log(conf.Sys_Log, "warn_pthread->\033[34mError in socket_create_udp: %s\033[0m", strerror(errno));
+        return NULL;
+    }
+    struct sockaddr_in warn_addr;
+    int len = sizeof(struct sockaddr_in), warn_udp;
+    char buff[4 * SIZE] = {0};
+    char test[4 * SIZE] = {0};
+    char ttime[4 * SIZE] = {0};
+    while (1) {
+		warn_udp = recvfrom(warn_fd, buff, sizeof(buff), 0, (void *)&warn_addr, (socklen_t *)&len);
+        printf("%s\n", buff);
+        strcpy(test, buff);
+        int types = 0;
+        if (strtok_func(test, "note\n", " ")) {
+            DBG("\033[31mnote:\033[0m %s\n", buff);
+            printf("%d\n", atoi(test));
+            printf("\033[31m%s\n\033[0m", inet_ntoa(warn_addr.sin_addr));
+            time_t dm = time(NULL);
+            struct tm *dmt = localtime(&dm);
+            sprintf(ttime, "%d-%02d-%02d %02d:%02d:%02d", dmt->tm_year + 1900, dmt->tm_mon + 1, dmt->tm_mday, dmt->tm_hour, dmt->tm_min, dmt->tm_sec);
+            printf("%s\n", ttime);
+        } else {
+
+        }
+		printf("\033[31m%s\033[0m\n", buff);
+    }
+    return NULL;
+}*/
 /*定时器管理者*/
 void timers_manager() {
     
     print_timer.interval--;
     if(print_timer.interval == 0) {
-        print_timer.interval = 3;//2s
+        print_timer.interval = SET.print_time;
         print_timer.handler();
     }
     heart_timer.interval--;
     if(heart_timer.interval == 0) {
-        heart_timer.interval = 7;//5s
+        heart_timer.interval = SET.heart_time;
         heart_timer.handler();
-    }
-    login_timer.interval--;
-    if(login_timer.interval == 0) {
-        login_timer.interval = 13;
-        login_timer.handler();
     }
     ctrldata_timer.interval--;
     if(ctrldata_timer.interval == 0) {
-        ctrldata_timer.interval = 23;
+        ctrldata_timer.interval = SET.ctrldata_time;
         ctrldata_timer.handler();
     }
 }
@@ -228,9 +255,6 @@ void print() {
 }
 void heart() {
     threadpool_add_task(&pool, heart_pthread, linkedlist);
-}
-void login() {
-    threadpool_add_task(&pool, login_pthread, 0);
 }
 void ctrldata() {
     LinkedList p;
@@ -256,16 +280,13 @@ void timers_init(int sec)  {
     sigemptyset(&task.sa_mask);
     sigaction(SIGALRM, &task, NULL);
     
-    print_timer.interval = 3 * sec;
+    print_timer.interval = SET.print_time * sec;
     print_timer.handler = print;
     
-    heart_timer.interval = 7 * sec;
+    heart_timer.interval = SET.heart_time * sec;
     heart_timer.handler = heart;
     
-    login_timer.interval = 13 * sec;
-    login_timer.handler = login;
-    
-    ctrldata_timer.interval = 23 * sec;
+    ctrldata_timer.interval = SET.ctrldata_time * sec;
     ctrldata_timer.handler = ctrldata;
 }
 
@@ -290,6 +311,10 @@ int main() {
     DB.host = get_conf_value(config, "host");
     DB.user = get_conf_value(config, "user");
     DB.passwd = get_conf_value(config, "passwd");
+
+    SET.print_time = atoi(get_conf_value(config, "print_time"));
+    SET.heart_time = atoi(get_conf_value(config, "heart_time"));
+    SET.ctrldata_time = atoi(get_conf_value(config, "ctrldata_time"));
     /*初始化头节点*/
     struct sockaddr_in init_addr;
     memset(&init_addr, 0, sizeof(struct sockaddr_in));
@@ -300,7 +325,10 @@ int main() {
         DBG("创建登陆套接字失败：%s\n", strerror(errno));
     }
     /*线程池初始化*/
-    threadpool_init(&pool, 2, 10);
+    threadpool_init(&pool, 2, conf.INS);
+    /*添加任务*/
+    threadpool_add_task(&pool, login_pthread, 0);
+    //threadpool_add_task(&pool, warn_pthread, 0);
     /*定时队列*/
     timers_init(1);
     while(1);

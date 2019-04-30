@@ -5,7 +5,7 @@ OBJS = Master.o node.o epoll.o common.o condition.o threadpool.o
 .PHONY: clean
 
 ./a.out : $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) 
+	$(CC) $(CFLAGS) $(OBJS) -lpthread 
 
 Master.o : Master.c
 	$(CC) -c $(CFLAGS) Master.c

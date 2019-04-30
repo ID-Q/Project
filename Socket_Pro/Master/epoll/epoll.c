@@ -23,6 +23,7 @@ void do_epoll(LinkedList head, int listenfd) {
         handle_events(head, epollfd, events, ret, listenfd, buf);
     }
     close(epollfd);
+    return ;
 }
 /*事件处理函数*/
 void handle_events(LinkedList head, int epollfd, struct epoll_event *events, int num, int listenfd, char *buf) {

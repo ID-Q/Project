@@ -56,13 +56,13 @@ struct Master_Conf{
     int Data_Port;//数据端口
     int Warn_Port;//警告端口
     int INS;//线程并发度
-}conf;
+} conf;
 
 typedef struct ID {
     int Req_Id;//请求ID
     int Yes_Id;//确认ID
     char *filename;//文件名字
-}ID;
+} ID;
 ID task_id[N];//初始化六个结构体
 
 struct database {
@@ -70,7 +70,13 @@ struct database {
     char *host;
     char *user;
     char *passwd;
-}DB;
+} DB;
+
+struct set_time {
+    int print_time;
+    int heart_time;
+    int ctrldata_time;
+} SET;
 
 struct timers {
     int interval; //定时时间
