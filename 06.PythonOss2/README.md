@@ -1,0 +1,106 @@
+# Python 从剪贴板上传图片到阿里云Oss
+
+> 图床功能
+
+## 阿里云创建用户
+
+> 首先创建阿里云用户
+>
+> 点击控制台，开通对象存储Oss功能
+>
+> 新建Bucket存储
+>
+> 点击头像，点击accesskeys创建密钥【建议使用子密钥】
+
+## 环境配置
+
+> 安装Python版本
+>
+> ```bash
+> #安装Python SDK
+> pip install oss2
+> #安装PIL
+> pip install pillow
+> #安装pyperclip
+> pip install pyperclip
+> ```
+
+## 代码编写
+
+```python
+#!/usr/bin/env python
+# coding=utf-8
+import oss2
+import uuid
+import pyperclip
+import sys
+import time
+import os
+from PIL import Image
+from PIL import ImageGrab
+
+#OSS信息
+AccessKeyID = "YourAccessKetID"
+AccessKeySecret = "YourAccessKeySecret"
+EndPoint = "YourEndPoint"
+BucketName = "YourBucketName"
+#存储路径
+Path = "File_Path"
+
+#确定是否为图片
+def is_img(ext):
+    ext = ext.lower()
+    if ext in ['.jpg', '.png', '.jpeg', '.bmp', '.gif']:
+        return True
+    else:
+        return False
+
+#查找剪贴板中是否有图片
+def has_im():
+    if len(sys.argv) == 1:
+        im = ImageGrab.grabclipboard()
+        if isinstance(im, Image.Image):
+            src_file = Path + "Oss.jpg"
+            im.save(src_file)
+            return src_file
+        else:
+            print "剪贴板中无图片"
+            sys.exit()
+    elif len(sys.argv) == 2:
+        if not os.path.exists(sys.argv[1]):
+            print "文件不存在"
+            sys.exit()
+        else:
+            if not is_img(os.path.splitext(sys.argv[1])[1]):
+                print "%s" % os.path.splitext(sys.argv[1])[1]
+                sys.exit()
+            else:
+                src_file = sys.argv[1]
+    else:
+        print "Error in args"
+        sys.exit()
+
+#上传的文件独立名
+def oss_file_name(local_name):
+    name = uuid.uuid4().__str__().replace("-", "").upper()
+    Date = time.strftime('%Y-%m-%d', time.localtime(time.time()))
+    local_name = str(local_name).rsplit(".")
+    return "%s/%s.%s" % (Date, name, local_name[-1])
+
+#Oss上传
+def Oss(img_name, img_path):
+    auth = oss2.Auth(AccessKeyID, AccessKeySecret)
+    bucket = oss2.Bucket(auth, EndPoint, BucketName)
+    bucket.put_object_from_file(img_name, img_path)
+
+#将URL复制到剪贴板
+def Url_Clip(name):
+    result_str = "![](http://%s.%s/%s)" % (BucketName, EndPoint, name)
+    pyperclip.copy(result_str)
+
+if __name__=="__main__":
+    img_path = has_im()
+    img_name = oss_file_name(img_path)
+    Oss(img_name, img_path)
+    Url_Clip(img_name)
+```
