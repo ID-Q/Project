@@ -1,0 +1,17 @@
+CC = gcc
+CFLAGS = -Wall -g -lpthread -lz -D _DEBUG 
+OBJS = echo_client.o common.o 
+
+.PHONY: clean
+
+./a.out : $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS) -o client
+
+echo_client.o : echo_client.c
+	$(CC) -c $(CFLAGS) echo_client.c
+
+common.o : ./common/common.c ./common/common.h
+	$(CC) -c $(CFLAGS) ./common/common.c
+
+clean:
+	rm -rf *.o client
