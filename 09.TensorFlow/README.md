@@ -1,0 +1,7 @@
+- dataset：测试集合
+- make_dataset：测试集合保存
+- p01.digital_recognition：手写数字识别
+- p02.generate_digital：手写生成数字
+- p03.openAI_gym_game：监督学习
+- p04.gym_mountain_car：深度学习
+- p05.policy_gradient：实战策略梯度
