@@ -1,17 +1,16 @@
+# 监督学习（基于openAI gym）
+
 ![gym cartpole-v0 failed](https://geektutu.com/post/tensorflow2-gym-nn/cartpole_v0_failed.gif)
 
-这篇文章是 **TensorFlow 2.0 Tutorial** 入门教程的第六篇文章，介绍如何使用 **TensorFlow 2.0** 搭建神经网络(Neural Network, NN)，使用纯监督学习(Supervised Learning)的方法，玩转 OpenAI gym game。示例代码基于 Python 3 和 TensorFlow 2.0 。
+使用 **TensorFlow 2.0** 搭建神经网络(Neural Network, NN)，使用纯监督学习(Supervised Learning)的方法，玩转 OpenAI gym game。示例代码基于 Python 3 和 TensorFlow 2.0 。
 
 [OpenAI gym](https://gym.openai.com/)是一个开源的游戏模拟环境，主要用来开发和比较强化学习(Reinforcement Learning, RL)的算法。这篇文章是 Tensorflow 2.0 系列使用 gym 的第一篇文章，网上介绍强化学习玩 gym 的文章比较多，而纯监督学习的文章极少。我们先使用纯监督学习的算法，一起感受 gym 的魅力吧。
 
 ## 如何安装
 
-```python 
-pip install tensorflow==2.0.0-beta0
+```bash
+conda install tensorflow
 pip install gym
-# 如果你有多个Python环境，需要指定
-# python3 -m pip install tensorflow==2.0.0-beta0
-# python3 -m pip install gym
 ```
 
 ## OpenAI gym 初尝试
@@ -24,7 +23,6 @@ pip install gym
 
 ```python
 # try_gym.py
-# https://geektutu.com
 import gym  # 0.12.5
 import random
 import time
@@ -175,7 +173,6 @@ Epoch 5/5
 
 ```python
 # predict.py
-# https://geektutu.com
 import time
 import numpy as np
 import gym
