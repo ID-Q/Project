@@ -17,7 +17,7 @@
 Google与2019年3月发布了TensorFlow 2.0，TensorFlow 2.0 清理了废弃的API，通过减少重复来简化API，并且通过Keras能够轻松地构建模型，从这篇文章开始，教程示例采用`TensorFlow 2.0`版本。
 
 ```bash
-pip install tensorflow==2.0.0-beta0
+conda install tensorflow
 ```
 
 或者在这里下载whl包安装：https://pypi.tuna.tsinghua.edu.cn/simple/tensorflow/
