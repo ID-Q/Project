@@ -8,7 +8,7 @@ class DataSource(object):
     def __init__(self):
 
         # mnist数据集存储的位置，如何不存在将自动下载
-        data_path = os.path.abspath(os.path.dirname(__file__)) + '/dataset/'
+        data_path = os.path.abspath(os.path.dirname(__file__)) + '/dataset/minst.npz'
         (train_images, train_labels), (test_images, test_labels) = tf.keras.datasets.mnist.load_data(data_path)
         # 6万张训练图片，1万张测试图片
         train_images = train_images.reshape((60000, 28, 28, 1))
