@@ -15,15 +15,11 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
-namespace network {
 class TCP {
 public:
-    TCP(int port, const char *host, int sec, double usec) : _port(port), _host(host), _sec(sec), _usec(usec) {}
+    TCP(int port, const char *host = "0.0.0.0", int sec = 0, double usec = 0.5) : _port(port), _host(host), _sec(sec), _usec(usec) {}
     int socket_create_tcp();
     int socket_connect_tcp();
-    int send_tcp(int fd, const char *file);
-    int recv_tcp(int fd, const char *buff);
-    ~TCP();
 private:
     int _port;
     const char *_host;
@@ -32,12 +28,9 @@ private:
 };
 class UDP {
 public:
-    UDP(int port, const char *host, int sec, double usec) : _port(port), _host(host), _sec(sec), _usec(usec) {}
+    UDP(int port, const char *host = "0.0.0.0", int sec = 0, double usec = 0.5) : _port(port), _host(host), _sec(sec), _usec(usec) {}
     int socket_create_udp();
-    int socket_connect_udp();
-    int send_udp(int fd, const char *buff);
-    int recv_udp(int fd, const char *buff);
-    ~UDP();
+    int socket_connect_udp(char *buff);
 private:
     int _port;
     const char *_host;
@@ -133,32 +126,6 @@ int TCP::socket_connect_tcp() {
     return socket_fd;
 }
 
-int TCP::send_tcp(int fd, const char *file) {
-    FILE *fp;
-    if ((fp = fopen(file, "r")) == NULL) {
-        return -1;
-    }
-    fseek(fp, 0, SEEK_END);
-    int len = ftell(fp);
-    fseek(fp, 0, SEEK_SET);
-    char *data = (char *)malloc(len + 1);
-    fread(data, len, 1, fp);
-    printf("%s\n", data);
-    if(send(fd, data, strlen(data), 0) < 0) {
-    }
-    fclose(fp);
-    memset(data, 0, sizeof(len + 1));
-    return 1;
-}
-
-int TCP::recv_tcp(int fd, const char *buff) {
-    if (recv(fd, (void*)buff, sizeof(buff), 0) > 0) {
-        return 1;
-    } else {
-        return 0;
-    }
-}
-
 int UDP::socket_create_udp() {
     int socket_fd;
     struct sockaddr_in socket_addr;
@@ -187,7 +154,7 @@ int UDP::socket_create_udp() {
     return socket_fd;
 }
 
-int UDP::socket_connect_udp() {
+int UDP::socket_connect_udp(char *buff) {
     int socket_fd;
     struct sockaddr_in socket_addr;
     //创建套接字
@@ -202,33 +169,14 @@ int UDP::socket_connect_udp() {
     socket_addr.sin_port = htons(this->_port);//端口
     socket_addr.sin_addr.s_addr = inet_addr(this->_host);//IP地址
     close(socket_fd);
-    return 1;
-}
-
-int UDP::send_udp(int fd, const char *buff) {
-	struct sockaddr_in socket_addr;
-	//设置服务器
-    memset(&socket_addr, 0, sizeof(socket_addr));//数据初始化清零
-    socket_addr.sin_family = AF_INET;//设置协议族
-    socket_addr.sin_port = htons(this->_port);//端口
-    socket_addr.sin_addr.s_addr = inet_addr(this->_host);//IP地址
-
-	int socket_udp;
-    socket_udp = sendto(fd, (void*)buff, sizeof(buff), 0, (void *)&socket_addr, sizeof(socket_addr));
+    int socket_udp;
+    socket_udp = sendto(socket_fd, buff, sizeof(buff), 0, (void *)&socket_addr, sizeof(socket_addr));
     if (socket_udp < 0) {
-        close(fd);
+        close(socket_fd);
         return -1;
     }
+    close(socket_fd);
     return 1;
-}
-
-int UDP::recv_udp(int fd, const char *buff) {
-    if (recv(fd, (void*)buff, sizeof(buff), 0) > 0) {
-        return 1;
-    } else {
-        return 0;
-    }
-}
 }
 
 #endif
