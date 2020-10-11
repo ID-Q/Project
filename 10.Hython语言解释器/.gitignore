@@ -1,5 +1,5 @@
-./*.tokens
-./*Lexer.c 
-./*Lexer.h 
-./*Parser.c 
-./*Parser.h
+*.tokens
+*Lexer.c 
+*Lexer.h 
+*Parser.c 
+*Parser.h
