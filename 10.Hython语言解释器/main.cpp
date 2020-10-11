@@ -17,17 +17,18 @@ using std::string;
 using std::cout;
 
 class ExprTreeEvaluator {
-    map<string, int> memory;
+    map<string,int> memory;
 public:
     ExprTreeEvaluator(ExprTreeEvaluator *next) {
         this->next = next;
     }
-    int find(string var) {
+    int &find(string var) {
         if (this->memory.find(var) != this->memory.end()) {
             return this->memory[var];
         }
         if (this->next) return this->next->find(var);
-        return 0;
+        std::cout << "undefined " << var << std::endl;
+        exit(-1);
     }
     int run(pANTLR3_BASE_TREE);
     ExprTreeEvaluator *next;
@@ -36,7 +37,8 @@ public:
 pANTLR3_BASE_TREE getChild(pANTLR3_BASE_TREE, unsigned);
 const char* getText(pANTLR3_BASE_TREE tree);
 
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[])
+{
   pANTLR3_INPUT_STREAM input;
   ptestLexer lex;
   pANTLR3_COMMON_TOKEN_STREAM tokens;
@@ -54,7 +56,6 @@ int main(int argc, char* argv[]) {
 
   ExprTreeEvaluator eval(NULL);
   int rr = eval.run(tree);
-  cout << "Evaluator result: " << rr << '\n';
 
   parser->free(parser);
   tokens->free(tokens);
@@ -64,15 +65,48 @@ int main(int argc, char* argv[]) {
   return 0;
 }
 
-int ExprTreeEvaluator::run(pANTLR3_BASE_TREE tree) {
+int ExprTreeEvaluator::run(pANTLR3_BASE_TREE tree)
+{
     pANTLR3_COMMON_TOKEN tok = tree->getToken(tree);
-    if (tok) {
-        switch (tok->type) {
+    if(tok) {
+        switch(tok->type) {
+        case BLOCK: {
+            ExprTreeEvaluator new_block(this);
+            int k = tree->getChildCount(tree);
+            int r = 0;
+            for(int i = 0; i < k; i++) {
+                r = new_block.run(getChild(tree, i));
+            }
+            return r;
+        } break;
+        case DEF: {
+            int k = tree->getChildCount(tree);
+            for (int i = 0; i < k; i += 1) {
+                pANTLR3_BASE_TREE child = getChild(tree, i);
+                string var(getText(child));
+                if (this->memory.find(var) != this->memory.end()) {
+                    std::cout << "redefined " << var << std::endl;
+                    exit(-1);
+                }
+                this->memory[var] = 0;
+                if (child->getChildCount(child)) {
+                    int r = this->run(getChild(child, 0));
+                    this->memory[var] = r;
+                }
+            }
+            return 0;
+        } break;
+        case PRINT: {
+            int r = run(getChild(tree, 0));
+            printf("%d\n", r);
+            return r;
+        } break;
         case INT: {
             const char* s = getText(tree);
-            if (s[0] == '~') {
-                return -atoi(s + 1);
-            } else {
+            if(s[0] == '~') {
+                return -atoi(s+1);
+            }
+            else {
                 return atoi(s);
             }
         }
@@ -81,26 +115,30 @@ int ExprTreeEvaluator::run(pANTLR3_BASE_TREE tree) {
             return this->find(var);
         }
         case PLUS:
-            return run(getChild(tree, 0)) + run(getChild(tree, 1));
+            return run(getChild(tree,0)) + run(getChild(tree,1));
         case MINUS:
-            return run(getChild(tree, 0)) - run(getChild(tree, 1));
+            return run(getChild(tree,0)) - run(getChild(tree,1));
         case TIMES:
-            return run(getChild(tree, 0)) * run(getChild(tree, 1));
+            return run(getChild(tree,0)) * run(getChild(tree,1));
+        case DIV:
+            return run(getChild(tree,0)) / run(getChild(tree,1));
         case ASSIGN: {
-            string var(getText(getChild(tree, 0)));
-            int val = run(getChild(tree, 1));
-            memory[var] = val;
+            string var(getText(getChild(tree,0)));
+            int &var_ins = this->find(var);
+            int val = run(getChild(tree,1));
+            var_ins = val;
             return val;
         }
         default:
             cout << "Unhandled token: #" << tok->type << '\n';
             return -1;
         }
-    } else {
+    }
+    else {
         cout << "in" << std::endl;
         int k = tree->getChildCount(tree);
         int r = 0;
-        for (int i = 0; i < k; i++) {
+        for(int i = 0; i < k; i++) {
             r = run(getChild(tree, i));
             printf("value : %d\n", r);
         }
@@ -108,13 +146,14 @@ int ExprTreeEvaluator::run(pANTLR3_BASE_TREE tree) {
     }
 }
 
-pANTLR3_BASE_TREE getChild(pANTLR3_BASE_TREE tree, unsigned i) {
+pANTLR3_BASE_TREE getChild(pANTLR3_BASE_TREE tree, unsigned i)
+{
     assert(i < tree->getChildCount(tree));
     return (pANTLR3_BASE_TREE) tree->getChild(tree, i);
 }
 
-const char* getText(pANTLR3_BASE_TREE tree) {
+const char* getText(pANTLR3_BASE_TREE tree)
+{
     return (const char*) tree->getText(tree)->chars;
 }
-
 
