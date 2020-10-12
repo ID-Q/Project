@@ -1,14 +1,15 @@
 CC = g++
-CFLAGS = -DDEBUG 
+CFLAGS = -g -Wall
 OBJS = 
+TARGET='./bin/test'
 
-all : test.g main.cpp
-	java -jar ./antlr-3.4-complete.jar test.g 
-	$(CC) $(CFLAGS) *.cpp *.c ./libs/libantlr3c.a -I. -o test 
+all : 
+	cd ./antlr3.4 && make
+	$(CC) $(CFLAGS) *.cpp ./src/*.cpp ./antlr3.4/*.c ./antlr3.4/libs/libantlr3c.a -o $(TARGET) -I./include -I ./antlr3.4/include -I ./antlr3.4/
 
 .PHONY: run clean 
 run:
-	./test input
+	$(TARGET) ./input
 
 clean:
-	rm test
+	rm -rf $(TARGET)
